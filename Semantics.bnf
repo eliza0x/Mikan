@@ -1,0 +1,3 @@
+<term>    ::= <numeric> | <boolean>
+<numeric> ::= succ <numeric> | pred <numeric> | zero
+<boolean> ::= true | false | iszero <numeric>

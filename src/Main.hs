@@ -8,21 +8,26 @@ data Term =
   | TmTrue
   | TmFalse
   | NoRuleApplies
-  deriving Show
+  deriving (Show, Eq)
+
+eval :: Term -> Term
+eval t = if t == t' then t' else eval t' where
+  t' = eval1 t
 
 eval1 :: Term -> Term
-eval1 term = case term of
-  TmZero                -> TmZero
-  TmTrue                -> TmTrue
-  TmFalse               -> TmFalse
-  TmPred TmZero         -> TmZero
-  TmPred (TmSucc term') -> if isnumerical term' then term' else NoRuleApplies
-  TmSucc TmZero         -> TmSucc TmZero
-  TmSucc term'          -> TmSucc $ eval1 term'
-  TmIsZero TmZero       -> TmTrue
-  TmIsZero (TmSucc _)   -> TmFalse
-  TmIsZero term'        -> TmIsZero $ eval1 $ if isnumerical term' then term' else NoRuleApplies  
-  _                     -> NoRuleApplies
+eval1 t = case t of
+  TmZero              -> TmZero
+  TmTrue              -> TmTrue
+  TmFalse             -> TmFalse
+  TmPred TmZero       -> TmZero
+  TmPred (TmSucc t')  -> if isnumerical t' then t' else NoRuleApplies
+  TmPred t'           -> TmPred $ eval1 t'
+  TmSucc TmZero       -> TmSucc TmZero
+  TmSucc t'           -> TmSucc $ eval1 t'
+  TmIsZero TmZero     -> TmTrue
+  TmIsZero (TmSucc _) -> TmFalse
+  TmIsZero t'         -> TmIsZero $ eval1 $ if isnumerical t' then t' else NoRuleApplies
+  _                   -> NoRuleApplies
 
 isnumerical :: Term -> Bool
 isnumerical term = case term of
