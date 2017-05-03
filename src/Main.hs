@@ -6,10 +6,8 @@ import Prelude hiding (succ, pred)
 import Eval(eval)
 import Types
 import Text.ParserCombinators.Parsec
--- import Text.Parsec.Prim ((<|>))
 
--- | <term>     ::= <numeric> | <boolean>
--- | <list>     ::= [<term> <term>]
+-- | <term>     ::= "(" <statement> ")" | <numeric> | <boolean> 
 -- | <numeric>  ::= pred <list> | <list>
 -- | <boolean>  ::= true | false | iszero <numeric>
 
@@ -17,27 +15,31 @@ statement :: Parser Term
 statement = spaces *> term <* spaces
 
 term :: Parser Term
-term = bracketParser <|> succParser <|> predParser <|> booleanParser
-
-numericalParser,  succParser, predParser :: Parser Term
-numericalParser = succParser <|> predParser 
+term = bracketParser <|> numericalParser <|> booleanParser
 
 bracketParser :: Parser Term
-bracketParser =
+bracketParser = char '(' *> statement <* char ')'
+
+numberParser, numericalParser,  succParser, predParser, addParser, subParser, mulParser :: Parser Term
+numericalParser = numberParser <|> succParser <|> predParser 
+
+numberParser =
   listToMikanTerm <$> (char '[' *> spaces *> elements <* spaces <* char ']')
   where
-  elements = many $
-    spaces *> char '[' *> (statement <|> (spaces *> pure TmZero)) <* char ']' <* spaces
+  elements = many $ spaces *> char '[' *> (statement <|> spaces *> pure TmZero) <* char ']' <* spaces
   listToMikanTerm :: [Term] -> Term
-  listToMikanTerm []     = TmZero
-  listToMikanTerm xs = foldr TmPair TmZero xs
+  listToMikanTerm [] = TmZero
+  listToMikanTerm (_:xs) = TmSucc $ listToMikanTerm xs
 
-succParser = TmPair TmZero <$> (string "succ" *> many1 space *> statement)
-predParser = TmPred <$> (string "pred" *> many1 space *> statement)
+succParser = TmSucc <$> (string "succ" *> space *> statement)
+predParser = TmPred <$> (string "pred" *> space *> statement)
+addParser  = TmAdd <$> (string "add" *> space *> statement) <*> (space *> statement)
+mulParser  = TmMul <$> (string "mul" *> space *> statement) <*> (space *> statement)
+subParser  = TmSub <$> (string "sub" *> space *> statement) <*> (space *> statement)
 
 booleanParser, isZeroParser, trueParser, falseParser :: Parser Term
 booleanParser = trueParser <|> falseParser
-isZeroParser = TmIsZero <$> (string "iszero?" *> many1 space *> statement)
+isZeroParser = TmIsZero <$> (string "iszero?" *> space *> statement)
 trueParser    = pure TmTrue  <* string "true"
 falseParser   = pure TmFalse <* string "false"
 
@@ -48,7 +50,8 @@ run input = case parse statement "Mikan" input of
 
 main :: IO ()
 main = do
-  putStrLn $ run "succ [succ [[] [] []]]"
+  putStrLn $ run "succ [[] [] []]"
   putStrLn $ run "pred [[] [] []]"
   putStrLn $ run "pred succ [[] [] []]"
+  putStrLn $ run "add [[]] [[] [] []]"
 
