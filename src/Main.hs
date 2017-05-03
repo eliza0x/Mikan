@@ -49,9 +49,5 @@ run input = case parse statement "Mikan" input of
             Right  val -> show . eval $ val
 
 main :: IO ()
-main = do
-  putStrLn $ run "succ [[] [] []]"
-  putStrLn $ run "pred [[] [] []]"
-  putStrLn $ run "pred succ [[] [] []]"
-  putStrLn $ run "add [[]] [[] [] []]"
+main = putStrLn . run =<< readLn
 
