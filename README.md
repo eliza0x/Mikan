@@ -5,7 +5,7 @@ Domain specific language for calculate Mikan.
 
 ## Syntax
 ```
-[[][][]]
+succ [[][][]]
 ```
 
 ## Is it a calculator?

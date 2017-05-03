@@ -1,3 +1,5 @@
-<term>    ::= <numeric> | <boolean>
-<numeric> ::= succ <numeric> | pred <numeric> | zero
-<boolean> ::= true | false | iszero <numeric>
+<term>     ::= <numeric> | <boolean>
+<list>     ::= '(' <term>* ')'
+<numeric>  ::= succ <list> | pred <list> | <list>
+<boolean>  ::= true | false | iszero <numeric>
+
