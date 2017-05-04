@@ -11,6 +11,10 @@ eval1 t = case t of
   TmZero                   -> TmZero
   TmTrue                   -> TmTrue
   TmFalse                  -> TmFalse
+  TmIf TmTrue  t' _        -> t'
+  TmIf TmFalse _  t'       -> t'
+  TmIf t' iftrue  iffalse  -> if not $ isnumerical t then TmIf (eval t') iftrue iffalse 
+                                                      else NoRuleApplies
   TmSucc t'                -> TmSucc $ if isnumerical t' then t' else NoRuleApplies
   TmPred TmZero            -> TmZero
   TmPred (TmSucc t')       -> if isnumerical t' then t' else NoRuleApplies

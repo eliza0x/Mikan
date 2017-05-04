@@ -3,9 +3,12 @@ Domain specific language for calculate Mikan.
 
 ![ORANGES](./oranges.jpeg)
 
-## Syntax
+## How to use
 ```
-succ [[][][]]
+$ mikan "succ [[] [] []]"
+succ succ succ succ []
+$ mikan "pred ( succ [[] [] []] )"
+succ succ succ []
 ```
 
 ## Is it a calculator?
