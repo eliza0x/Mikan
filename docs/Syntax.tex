@@ -13,7 +13,8 @@
   \setlength{\grammarparsep}{20pt}
   \setlength{\grammarindent}{8em}
   \begin{grammar}
-    <term>     ::= <numeric> 
+    <term>     ::= <term>*
+              \alt <numeric> 
               \alt <boolean>
               \alt <list>
 
