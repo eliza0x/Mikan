@@ -1,31 +1,53 @@
 module Eval(eval) where
 
 import Types
+import Control.Monad.Writer.Lazy (Writer, tell, runWriter)
+import System.IO.Unsafe
 
 eval :: Term -> Term
-eval t = if t == t' then t' else eval t' where
-  t' = eval1 t
+eval = fst . runWriter . eval'
 
-eval1 :: Term -> Term
-eval1 t = case t of
-  TmZero                   -> TmZero
-  TmTrue                   -> TmTrue
-  TmFalse                  -> TmFalse
-  TmIf TmTrue  t' _        -> t'
-  TmIf TmFalse _  t'       -> t'
-  TmIf t' iftrue  iffalse  -> if not $ isnumerical t then TmIf (eval t') iftrue iffalse 
-                                                      else NoRuleApplies
-  TmSucc t'                -> TmSucc $ if isnumerical t' then t' else NoRuleApplies
-  TmPred TmZero            -> TmZero
-  TmPred (TmSucc t')       -> if isnumerical t' then t' else NoRuleApplies
-  TmPred t'                -> TmPred $ eval1 t'
-  TmIsZero TmZero          -> TmTrue
-  TmIsZero (TmSucc TmZero) -> TmFalse
-  TmIsZero t'              -> TmIsZero $ eval1 $ if isnumerical t' then t' else NoRuleApplies
-  _                        -> NoRuleApplies
+unsafeEval :: Term -> Term
+unsafeEval t = unsafePerformIO $ do
+         let (evaluatedTerm, logHead:logTail) = runWriter . eval' $ t
+         print logHead
+         mapM_ (\term -> putStrLn $ "-> " ++ show term) logTail
+         putStrLn "---"
+         return evaluatedTerm
 
-isnumerical :: Term -> Bool
-isnumerical term = case term of
+eval' :: Term -> Writer [Term] Term
+eval' t = do
+  t' <- eval1 t
+  if t == t' then return t'
+             else eval' t'
+
+eval1 :: Term -> Writer [Term] Term
+eval1 t = tell [t] >> (case t of
+  TmZero                   -> return TmZero
+  TmTrue                   -> return TmTrue
+  TmFalse                  -> return TmFalse
+  TmIf TmTrue  t' _        -> return t'
+  TmIf TmFalse _  t'       -> return t'
+  TmIf t' iftrue  iffalse  -> (\t'' -> TmIf t'' iftrue iffalse) <$> eval1 t'
+  TmSucc t'                -> TmSucc <$> if isnumericval t' 
+                                  then eval1 t' 
+                                  else return NoRuleApplies
+  TmPred TmZero            -> return TmZero
+  TmPred (TmSucc t')       -> return $ if isnumericval t' 
+                                then t'
+                                else NoRuleApplies
+  TmPred t'                -> TmPred <$> eval1 t'
+  TmIsZero TmZero          -> return TmTrue
+  TmIsZero (TmSucc TmZero) -> return TmFalse
+  TmIsZero t'              -> TmIsZero <$> eval1 (if isnumericval t' 
+                                 then t' 
+                                 else NoRuleApplies)
+  _                        -> return NoRuleApplies
+  )
+
+isnumericval :: Term -> Bool
+isnumericval term = case term of
   TmZero       -> True
-  TmSucc term' -> isnumerical term'
+  TmSucc term' -> isnumericval term'
+  TmPred term' -> isnumericval term'
   _            -> False

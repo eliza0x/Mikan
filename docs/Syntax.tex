@@ -13,20 +13,27 @@
   \setlength{\grammarparsep}{20pt}
   \setlength{\grammarindent}{8em}
   \begin{grammar}
-    <term>     ::= <term>*
-              \alt <numeric> 
-              \alt <boolean>
-              \alt <list>
+    <list>    ::= '(' <expr> ')'
 
-    <list>     ::= '(' <term>* ')'
-    
-    <numeric>  ::= succ <list> 
-              \alt pred <list> 
+    <expr>    ::=  <term>
               \alt <list>
-    
-    <boolean>  ::= true 
+              \alt <expr> <expr>
+              \alt <space>
+
+    <term>    ::=  <term>
+              \alt "null?" <expr> <list>
+              \alt "cons"  <expr> <list> 
+              \alt "head"  <list>
+              \alt "tail"  <list>
+
+    <nat>     ::=  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
+              \alt <nat> <nat>
+
+    <bool>    ::=  true 
               \alt false 
-              \alt iszero <numeric>
+
+    <space>   ::=  " "
+              \alt <space> <space>
   \end{grammar}
 
 \end{document}

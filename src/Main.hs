@@ -21,7 +21,7 @@ ifParser = do
 numericalParser,  numberParser, succParser, predParser, zeroParser :: Parser Term
 numericalParser = numberParser <|> succParser <|> predParser <|> zeroParser
 
-zeroParser = string ":mikan:" *> pure TmZero
+zeroParser = string "zero" *> pure TmZero
 
 numberParser = toTerm <$> (char '[' *> elements <* char ']')
   where

@@ -11,12 +11,13 @@ Stack is [here](https://docs.haskellstack.org/en/stable/README/).
 
 ## Syntax
 ```
-$ mikan "succ [[] [] []]"
-succ succ succ succ []
-$ mikan "pred ( succ [[] [] []] )"
-succ succ succ []
-$ mikan "if iszero(pred(succ [[][][]])) then true else false"
-false
+if true then succ pred succ [] else succ pred succ []
+-> succ pred succ []
+-> pred succ []
+-> succ []
+-> []
+---
+succ []
 ```
 
 ## Is it a calculator or programming langage?
