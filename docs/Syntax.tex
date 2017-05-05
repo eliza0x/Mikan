@@ -1,0 +1,32 @@
+\documentclass[]{article}
+\usepackage{amssymb,amsmath}
+\usepackage{syntax}
+\usepackage{fontspec}
+\setmainfont[Ligatures=TeX]{Droid Serif}
+\setsansfont[Ligatures=TeX]{Droid Sans}
+\setmonofont{Source Code Pro}
+
+\date{May 05, 2017}
+\begin{document}
+
+  \section{BNF}
+  \setlength{\grammarparsep}{20pt}
+  \setlength{\grammarindent}{8em}
+  \begin{grammar}
+    <term>     ::= <numeric> 
+              \alt <boolean>
+              \alt <list>
+
+    <list>     ::= '(' <term>* ')'
+    
+    <numeric>  ::= succ <list> 
+              \alt pred <list> 
+              \alt <list>
+    
+    <boolean>  ::= true 
+              \alt false 
+              \alt iszero <numeric>
+  \end{grammar}
+
+\end{document}
+
