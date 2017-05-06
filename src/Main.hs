@@ -3,13 +3,13 @@
 module Main where
 
 import System.Environment (getArgs)
-import Eval(eval)
+import Eval(eval, unsafeEval)
 import Lexer(lexer)
 import Parser(parser)
 
 main :: IO ()
 main = do
     source <- unwords <$> getArgs
-    print . eval . parser $ case lexer source of
+    print . unsafeEval . parser $ case lexer source of
         Left err     -> error $ show err
         Right simbol -> simbol

@@ -1,19 +1,19 @@
-module Eval(eval) where
+module Eval(eval, unsafeEval) where
 
 import Types
 import Control.Monad.Writer.Lazy (Writer, tell, runWriter)
--- import System.IO.Unsafe
+import System.IO.Unsafe
 
 eval :: Term -> Term
 eval = fst . runWriter . eval'
 
--- unsafeEval :: Term -> Term
--- unsafeEval t = unsafePerformIO $ do
---          let (evaluatedTerm, logHead:logTail) = runWriter . eval' $ t
---          print logHead
---          mapM_ (\term -> putStrLn $ "-> " ++ show term) logTail
---          putStrLn "---"
---          return evaluatedTerm
+unsafeEval :: Term -> Term
+unsafeEval t = unsafePerformIO $ do
+         let (evaluatedTerm, logHead:logTail) = runWriter . eval' $ t
+         print logHead
+         mapM_ (\term -> putStrLn $ "-> " ++ show term) logTail
+         putStrLn "---"
+         return evaluatedTerm
 
 eval' :: Term -> Writer [Term] Term
 eval' t = do

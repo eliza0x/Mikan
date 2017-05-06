@@ -21,7 +21,7 @@ instance Show Term where
     show (TmSucc x)   = "succ " ++ show x
     show (TmPred x)   = "pred " ++ show x
     show (TmIf x y z)   = "if " ++ show x ++ " then " ++ show y ++ " else " ++ show z
-    show TmZero       = "[]"
+    show TmZero       = "()"
     show TmTrue       = "true"
     show TmFalse      = "false"
     show (NoRuleApplies str) = "[" ++ str ++ "]"
