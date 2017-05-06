@@ -4,7 +4,7 @@
 \usepackage{fontspec}
 \setmainfont[Ligatures=TeX]{Droid Serif}
 \setsansfont[Ligatures=TeX]{Droid Sans}
-\setmonofont{Source Code Pro}
+\setmonofont{Droid Sans Mono}
 
 \date{May 05, 2017}
 \begin{document}
@@ -13,18 +13,20 @@
   \setlength{\grammarparsep}{20pt}
   \setlength{\grammarindent}{8em}
   \begin{grammar}
-    <list>    ::= '(' <expr> ')'
+    
+    <pair>    ::= '('<expr> <space> <expr> ')'
 
     <expr>    ::=  <term>
-              \alt <list>
+              \alt <pair>
               \alt <expr> <expr>
-              \alt <space>
+              \alt <space> <expr>
+              \alt <expr> <space>
 
     <term>    ::=  <term>
-              \alt "null?" <expr> <list>
-              \alt "cons"  <expr> <list> 
-              \alt "head"  <list>
-              \alt "tail"  <list>
+              \alt "null?" <pair>
+              \alt "cons"  <expr> <pair> 
+              \alt "head"  <pair>
+              \alt "tail"  <pair>
 
     <nat>     ::=  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
               \alt <nat> <nat>
