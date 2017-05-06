@@ -1,0 +1,1 @@
+if (iszero (succ zero)) true (if true false zero)

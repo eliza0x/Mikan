@@ -11,18 +11,17 @@ Stack is [here](https://docs.haskellstack.org/en/stable/README/).
 
 ## Syntax
 ```
-$ mikan "if (iszero zero) (succ(pred(succ zero))) (succ(pred( succ zero)))"
-if iszero? () then succ pred succ () else succ pred succ ()
--> iszero? ()
--> if true then succ pred succ () else succ pred succ ()
--> succ pred succ ()
--> pred succ ()
--> succ ()
--> ()
+$ if (iszero (succ zero)) true (if true false zero)
+if (iszero? succ zero) then (true) else (if (true) then (false) else (zero))
+-> iszero? succ zero
+-> if (false) then (true) else (if (true) then (false) else (zero))
+-> if (true) then (false) else (zero)
+-> false
 ---
-succ ()
+false
 ```
 
 ## Is it a calculator or programming langage?
 NO, it is a counter for oranges. neither more nor less.
+
 
