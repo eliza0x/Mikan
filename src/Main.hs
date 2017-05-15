@@ -1,9 +1,7 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main where
 
 import System.Environment (getArgs)
-import Eval(eval, unsafeEval)
+import Eval(unsafeEval)
 import Lexer(lexer)
 import Parser(parser)
 

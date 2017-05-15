@@ -5,23 +5,29 @@ data Simbol =
   | SmList [Simbol]
   deriving (Show, Eq)
 
+type TmValue = String
+
 data Term =
-    TmZero
-  | TmTrue
-  | TmFalse
-  | TmIsZero  Term
-  | TmPred    Term
-  | TmSucc    Term
-  | TmIf      Term  Term  Term
-  | NoRuleApplies String
-  deriving Eq
+     TmZero
+   | TmTrue
+   | TmFalse
+   | TmIsZero
+   | TmPred
+   | TmSucc
+   | TmIf
+   | TmLambda  TmValue Term
+   | TmApp Term Term
+   | NoRuleApplies String
+   deriving Eq
 
 instance Show Term where
-    show (TmIsZero x)        = "iszero? " ++ show x
-    show (TmSucc x)          = "succ " ++ show x
-    show (TmPred x)          = "pred " ++ show x
-    show (TmIf x y z)        = "if (" ++ show x ++ ") then (" ++ show y ++ ") else (" ++ show z ++ ")"
+    show TmIsZero            = "iszero"
+    show TmSucc              = "succ"
+    show TmPred              = "pred"
+    show TmIf                = "if"
     show TmZero              = "zero"
     show TmTrue              = "true"
     show TmFalse             = "false"
-    show (NoRuleApplies str) = "[" ++ str ++ "]"
+    show (TmLambda v t)      = "(λ" ++ v ++ ". " ++ show t ++ ")"
+    show (TmApp t t')      = show t ++ " " ++ show t'
+    show (NoRuleApplies str) = "<" ++ str ++ ">"

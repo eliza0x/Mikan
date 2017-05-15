@@ -14,22 +14,14 @@
   \setlength{\grammarindent}{8em}
   \begin{grammar}
     
-    <pair>    ::= '('<expr> <space> <expr> ')'
+    <list>    ::= '('<expr>* ')'
 
     <expr>    ::=  <term>
               \alt <pair>
-              \alt <expr> <expr>
-              \alt <space> <expr>
-              \alt <expr> <space>
+              \alt <expr> <space> <expr>
 
     <term>    ::=  <term>
-              \alt "null?" <pair>
-              \alt "cons"  <expr> <pair> 
-              \alt "head"  <pair>
-              \alt "tail"  <pair>
-
-    <nat>     ::=  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
-              \alt <nat> <nat>
+              \alt "isnull" <space> <pair>
 
     <bool>    ::=  true 
               \alt false 
