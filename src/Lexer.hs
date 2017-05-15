@@ -15,6 +15,7 @@ termParser = SmList <$>
 simbols :: Parser Simbol
 simbols = 
       listParser
+  <|> lambdaParser
   <|> simbol
   <|> space *> simbols
 
@@ -24,6 +25,14 @@ simbol = SmAtom <$> many1 letter
 listParser :: Parser Simbol
 listParser = SmList <$> 
   (char '(' *> many (simbols <* spaces) <* char ')')
+
+lambdaParser :: Parser Simbol
+lambdaParser = do
+  char '\\' *> spaces
+  var <- simbol
+  spaces <* char '.'
+  term <- simbols
+  return $ SmLambda var term
 
 lexer :: String -> Either ParseError Simbol
 lexer = parse simbolsWithTerm "[LEXER]"
