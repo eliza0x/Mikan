@@ -1,13 +1,18 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Types where
+
+import Control.Lens (makeLenses)
+
+type SmVar = String
 
 data Simbol =
     SmAtom String
+  | SmLambda Simbol Simbol
   | SmList [Simbol]
   deriving (Show, Eq)
 
-type TmValue = String
-
-data Term =
+data Term a =
      TmZero
    | TmTrue
    | TmFalse
@@ -15,12 +20,13 @@ data Term =
    | TmPred
    | TmSucc
    | TmIf
-   | TmLambda  TmValue Term
-   | TmApp Term Term
+   | TmName a
+   | TmLambda String (Term a)
+   | TmApp (Term a) (Term a)
    | NoRuleApplies String
    deriving Eq
 
-instance Show Term where
+instance Show a => Show (Term a)  where
     show TmIsZero            = "iszero"
     show TmSucc              = "succ"
     show TmPred              = "pred"
@@ -28,6 +34,19 @@ instance Show Term where
     show TmZero              = "zero"
     show TmTrue              = "true"
     show TmFalse             = "false"
-    show (TmLambda v t)      = "(λ" ++ v ++ ". " ++ show t ++ ")"
-    show (TmApp t t')      = show t ++ " " ++ show t'
+    show (TmName n)          = show n
+    show (TmLambda str t)      = "(λ" ++ str ++ ". " ++ show t ++ ")"
+    show (TmApp t t')        = show t ++ " (" ++ show t' ++ ")"
     show (NoRuleApplies str) = "<" ++ str ++ ">"
+
+data Name = Name {
+    _name :: String
+  , _index :: Int
+  } deriving (Eq)
+$(makeLenses ''Name)
+
+instance Show Name  where
+  show (Name s _) = s
+
+type UnIndexedTerm = Term String
+type IndexedTerm = Term Name
