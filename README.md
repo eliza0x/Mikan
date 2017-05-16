@@ -11,14 +11,20 @@ Stack is [here](https://docs.haskellstack.org/en/stable/README/).
 
 ## Syntax
 ```
-$ if (iszero (succ zero)) true (if true false zero)
-if (iszero? succ zero) then (true) else (if (true) then (false) else (zero))
--> iszero? succ zero
--> if (false) then (true) else (if (true) then (false) else (zero))
--> if (true) then (false) else (zero)
--> false
+$ mikan 'succ ((\x. if (iszero x) (succ (succ zero)) zero) zero)'
+succ ((λx. if (iszero (x)) (succ (succ (zero))) (zero)) (zero))
+-> (λx. if (iszero (x)) (succ (succ (zero))) (zero)) (zero)
+-> succ (if (iszero (zero)) (succ (succ (zero))) (zero))
+-> if (iszero (zero)) (succ (succ (zero))) (zero)
+-> iszero (zero)
+-> succ (if (true) (succ (succ (zero))) (zero))
+-> if (true) (succ (succ (zero))) (zero)
+-> succ (succ (succ (zero)))
+-> succ (succ (zero))
+-> succ (zero)
+-> zero
 ---
-false
+succ (succ (succ (zero)))
 ```
 
 ## Is it a calculator or programming langage?

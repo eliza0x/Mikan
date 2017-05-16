@@ -30,24 +30,25 @@ eval1 :: IndexedTerm -> StateT [Name] LoggerM IndexedTerm
 eval1 t = do
   lift (tell [t])
   case t of
-    TmZero                                    -> return TmZero
-    TmTrue                                    -> return TmTrue
-    TmFalse                                   -> return TmFalse
-    TmLambda n t1                             -> TmLambda n <$> eval1 t1
-    TmApp (TmApp (TmApp TmIf TmTrue)  t') _   -> return t'
-    TmApp (TmApp (TmApp TmIf TmFalse) _)  t'  -> return t'
-    TmApp (TmApp(TmApp TmIf t')iftrue)iffalse -> evalIfEval1 t' iftrue iffalse
-    TmApp TmSucc t'                           -> evalTmSucc t'
-    TmApp TmPred TmZero                       -> return TmZero
-    TmApp TmPred (TmApp TmSucc t')            -> evalPredSucc t'
-    TmApp TmPred t'                           -> TmApp TmPred <$> eval1 t'
-    TmApp TmIsZero TmZero                     -> return TmTrue
-    TmApp TmIsZero (TmApp TmSucc TmZero)      -> return TmFalse
-    TmApp TmIsZero t'                         -> evalIsZero t'
-    TmApp (TmLambda _ t1) t2                  -> do modify decrementIndex
-                                                    return $ betaReduction t1 t2
-    NoRuleApplies str                         -> return $ NoRuleApplies str
-    _                                         -> return $ NoRuleApplies nothingMatch
+    TmZero                                   -> return TmZero
+    TmTrue                                   -> return TmTrue
+    TmFalse                                  -> return TmFalse
+    TmLambda n t1                            -> TmLambda n <$> eval1 t1
+    TmApp(TmApp(TmApp TmIf TmTrue)  t') _    -> return t'
+    TmApp(TmApp(TmApp TmIf TmFalse) _)  t'   -> return t'
+    TmApp(TmApp(TmApp TmIf t')iftrue)iffalse -> evalIfEval1 t' iftrue iffalse
+    TmApp TmSucc t'                          -> evalTmSucc t'
+    TmApp TmPred TmZero                      -> return TmZero
+    TmApp TmPred (TmApp TmSucc t')           -> evalPredSucc t'
+    TmApp TmPred t'                          -> TmApp TmPred <$> eval1 t'
+    TmApp TmIsZero TmZero                    -> return TmTrue
+    TmApp TmIsZero (TmApp TmSucc TmZero)     -> return TmFalse
+    TmApp TmIsZero t'                        -> evalIsZero t'
+    TmApp (TmLambda _ t1) t2                 -> do modify decrementIndex
+                                                   return $ betaReduction t1 t2
+    TmApp t1 t2                              -> TmApp <$> eval1 t1 <*> eval1 t2
+    NoRuleApplies str                        -> return $ NoRuleApplies str
+    _                                        -> return $ NoRuleApplies nothingMatch
 
 evalTmSucc, evalIsZero, evalPredSucc :: IndexedTerm -> StateT [Name] LoggerM IndexedTerm
 evalTmSucc t' = TmApp TmSucc <$> if isnumericval t'
@@ -73,6 +74,9 @@ nothingMatch    = "Missing evaluate: nothing match evaluate pattern"
 isnumericval :: IndexedTerm -> Bool
 isnumericval term = case term of
   TmZero               -> True
-  TmApp TmSucc term' -> isnumericval term'
-  TmApp TmPred term' -> isnumericval term'
-  _                    -> False
+  TmApp TmSucc term'                 -> isnumericval term'
+  TmApp TmPred term'                 -> isnumericval term'
+  TmApp (TmApp (TmApp TmIf _) t1) t2 -> isnumericval t1 && isnumericval t2
+  TmApp (TmLambda _ term') _         -> isnumericval term'
+  _                                  -> False
+
