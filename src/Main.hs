@@ -7,7 +7,10 @@ import Parser(parser)
 
 main :: IO ()
 main = do
-  source <- readFile . unwords =<< getArgs
+  args <- getArgs
+  source <- case head args of
+    "-f" -> readFile . unwords . tail $ args
+    _    -> return $ unwords args
   print . unsafeEval . parser $ case lexer source of
       Left err     -> error $ show err
       Right simbol -> simbol
