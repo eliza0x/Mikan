@@ -33,7 +33,6 @@ eval1 t = do
     TmZero                                   -> return TmZero
     TmTrue                                   -> return TmTrue
     TmFalse                                  -> return TmFalse
-    TmLambda n t1                            -> TmLambda n <$> eval1 t1
     TmApp(TmApp(TmApp TmIf TmTrue)  t') _    -> return t'
     TmApp(TmApp(TmApp TmIf TmFalse) _)  t'   -> return t'
     TmApp(TmApp(TmApp TmIf t')iftrue)iffalse -> evalIfEval1 t' iftrue iffalse
@@ -48,7 +47,7 @@ eval1 t = do
                                                    return $ betaReduction t1 t2
     TmApp t1 t2                              -> TmApp <$> eval1 t1 <*> eval1 t2
     NoRuleApplies str                        -> return $ NoRuleApplies str
-    _                                        -> return $ NoRuleApplies nothingMatch
+    x                                        -> return x
 
 evalTmSucc, evalIsZero, evalPredSucc :: IndexedTerm -> StateT [Name] LoggerM IndexedTerm
 evalTmSucc t' = TmApp TmSucc <$> if isnumericval t'
@@ -65,11 +64,11 @@ evalIfEval1 :: IndexedTerm -> IndexedTerm -> IndexedTerm -> StateT [Name] Logger
 evalIfEval1 term iftrue iffalse = (\t'-> TmApp (TmApp (TmApp TmIf t') iftrue) iffalse) 
                                 <$> eval1 term
 
-iszeroNotNumeric, succNotNumeric, predNotNumeric, nothingMatch :: String
+iszeroNotNumeric, succNotNumeric, predNotNumeric :: String
 iszeroNotNumeric = "Missing evaluate: TmIsZero(not numeric)"
 succNotNumeric   = "Missing evaluate: succ(<not numeric>)"
 predNotNumeric   = "Missing evaluate: pred(succ(<not numeric>))"
-nothingMatch    = "Missing evaluate: nothing match evaluate pattern"
+-- nothingMatch    = "Missing evaluate: nothing match evaluate pattern"
 
 isnumericval :: IndexedTerm -> Bool
 isnumericval term = case term of
