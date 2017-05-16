@@ -7,7 +7,7 @@ import Parser(parser)
 
 main :: IO ()
 main = do
-  source <- unwords <$> getArgs
+  source <- readFile . unwords =<< getArgs
   print . unsafeEval . parser $ case lexer source of
       Left err     -> error $ show err
       Right simbol -> simbol
