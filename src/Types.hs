@@ -3,6 +3,7 @@
 module Types where
 
 import Control.Lens (makeLenses)
+import Control.Monad.Writer(Writer)
 
 type SmVar = String
 
@@ -50,3 +51,6 @@ instance Show Name  where
 
 type UnIndexedTerm = Term String
 type IndexedTerm = Term Name
+
+type LoggerM=Writer [IndexedTerm]
+

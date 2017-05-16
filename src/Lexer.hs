@@ -31,7 +31,7 @@ lambdaParser = do
   char '\\' *> spaces
   var <- simbol
   spaces <* char '.'
-  term <- simbols
+  term <- SmList <$> many (simbols <* spaces)
   return $ SmLambda var term
 
 lexer :: String -> Either ParseError Simbol
