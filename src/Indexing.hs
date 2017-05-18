@@ -13,11 +13,8 @@ indexing' t = case t of
   TmApp t1 t2           -> TmApp <$> indexing' t1 <*> indexing' t2
   TmLambda nameStr t1   -> do
     modify incrementIndex
-    nameMaybe <- findName nameStr 
-    case nameMaybe of
-      Nothing -> do modify (\xs -> Name nameStr 0 : xs)
-                    TmLambda nameStr <$> indexing' t1
-      Just _  -> return . NoRuleApplies $ nameStr++" is already defined value"
+    modify (\xs -> Name nameStr 0 : xs)
+    TmLambda nameStr <$> indexing' t1
   TmName nameStr        -> do
     nameMaybe <- findName nameStr
     return $ case nameMaybe of
