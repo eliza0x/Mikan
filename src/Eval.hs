@@ -31,17 +31,12 @@ eval1 t = do
   lift (tell [t])
   case t of
     TmZero                                   -> return TmZero
-    TmTrue                                   -> return TmTrue
-    TmFalse                                  -> return TmFalse
-    TmApp(TmApp(TmApp TmIf TmTrue)  t') _    -> return t'
-    TmApp(TmApp(TmApp TmIf TmFalse) _)  t'   -> return t'
-    TmApp(TmApp(TmApp TmIf t')iftrue)iffalse -> evalIfEval1 t' iftrue iffalse
     TmApp TmSucc t'                          -> evalTmSucc t'
     TmApp TmPred TmZero                      -> return TmZero
     TmApp TmPred (TmApp TmSucc t')           -> evalPredSucc t'
     TmApp TmPred t'                          -> TmApp TmPred <$> eval1 t'
-    TmApp TmIsZero TmZero                    -> return TmTrue
-    TmApp TmIsZero (TmApp TmSucc TmZero)     -> return TmFalse
+    TmApp TmIsZero TmZero                    -> return $ TmLambda "x" (TmLambda "y" (TmName (Name "x" 1)))
+    TmApp TmIsZero (TmApp TmSucc TmZero)     -> return $ TmLambda "x" (TmLambda "y" (TmName (Name "y" 0)))
     TmApp TmIsZero t'                        -> evalIsZero t'
     TmApp (TmLambda _ t1) t2                 -> do modify decrementIndex
                                                    return $ betaReduction t1 t2
@@ -60,10 +55,6 @@ evalPredSucc t' = return $ if isnumericval t'
                          then t'
                          else NoRuleApplies predNotNumeric 
 
-evalIfEval1 :: IndexedTerm -> IndexedTerm -> IndexedTerm -> StateT [Name] LoggerM IndexedTerm
-evalIfEval1 term iftrue iffalse = (\t'-> TmApp (TmApp (TmApp TmIf t') iftrue) iffalse) 
-                                <$> eval1 term
-
 iszeroNotNumeric, succNotNumeric, predNotNumeric :: String
 iszeroNotNumeric = "Missing evaluate: TmIsZero(not numeric)"
 succNotNumeric   = "Missing evaluate: succ(<not numeric>)"
@@ -75,7 +66,6 @@ isnumericval term = case term of
   TmZero               -> True
   TmApp TmSucc term'                 -> isnumericval term'
   TmApp TmPred term'                 -> isnumericval term'
-  TmApp (TmApp (TmApp TmIf _) t1) t2 -> isnumericval t1 && isnumericval t2
   TmApp (TmLambda _ term') _         -> isnumericval term'
   _                                  -> False
 

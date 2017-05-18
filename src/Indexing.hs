@@ -13,23 +13,17 @@ indexing' t = case t of
   TmApp t1 t2           -> TmApp <$> indexing' t1 <*> indexing' t2
   TmLambda nameStr t1   -> do
     modify incrementIndex
-    nameMaybe <- findName nameStr 
-    case nameMaybe of
-      Nothing -> do modify (\xs -> Name nameStr 0 : xs)
-                    TmLambda nameStr <$> indexing' t1
-      Just _  -> return . NoRuleApplies $ nameStr++" is already defined value"
+    modify (\xs -> Name nameStr 0 : xs)
+    TmLambda nameStr <$> indexing' t1
   TmName nameStr        -> do
     nameMaybe <- findName nameStr
     return $ case nameMaybe of
       Nothing   -> NoRuleApplies ("undefined value:" ++ nameStr)
       Just n    -> TmName . Name nameStr $ (n^.index)
   TmZero                -> return TmZero           
-  TmTrue                -> return TmTrue           
-  TmFalse               -> return TmFalse          
   TmIsZero              -> return TmIsZero         
   TmPred                -> return TmPred           
   TmSucc                -> return TmSucc           
-  TmIf                  -> return TmIf             
   NoRuleApplies str     -> return $ NoRuleApplies str
 
 incrementIndex :: [Name] -> [Name]
@@ -55,12 +49,9 @@ betaReduction' i t1 var = case t1 of
   TmLambda n t11    -> TmLambda n $ betaReduction' (i+1) t11 var
   TmName n          -> if i == n^.index then var else TmName n
   TmZero            -> TmZero           
-  TmTrue            -> TmTrue           
-  TmFalse           -> TmFalse          
   TmIsZero          -> TmIsZero         
   TmPred            -> TmPred           
   TmSucc            -> TmSucc           
-  TmIf              -> TmIf             
   NoRuleApplies str -> NoRuleApplies str
 
 
