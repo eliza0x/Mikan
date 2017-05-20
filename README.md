@@ -11,23 +11,19 @@ Stack is [here](https://docs.haskellstack.org/en/stable/README/).
 
 ## Syntax
 ```
-$ mikan 'succ ((\x. if (iszero x) (succ (succ zero)) zero) zero)'
-succ ((λx. if (iszero (x)) (succ (succ (zero))) (zero)) (zero))
--> (λx. if (iszero (x)) (succ (succ (zero))) (zero)) (zero)
--> succ (if (iszero (zero)) (succ (succ (zero))) (zero))
--> if (iszero (zero)) (succ (succ (zero))) (zero)
--> iszero (zero)
--> succ (if (true) (succ (succ (zero))) (zero))
--> if (true) (succ (succ (zero))) (zero)
--> succ (succ (succ (zero)))
--> succ (succ (zero))
--> succ (zero)
+$ mikan '(\x. (\y. x y)) iszero zero'
+(λx. (λy. x (y))) (iszero) (zero)
+-> (λx. (λy. x (y))) (iszero)
 -> zero
+-> (λy. iszero (y)) (zero)
+-> iszero (zero)
+-> true
 ---
-succ (succ (succ (zero)))
+true
 ```
+
+samplecode is [here](https://github.com/eliza0x/Mikan/tree/master/samplecode).
 
 ## Is it a calculator or programming langage?
 NO, it is a counter for oranges. neither more nor less.
-
 
