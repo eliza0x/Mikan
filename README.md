@@ -24,6 +24,5 @@ true
 
 samplecode is [here](https://github.com/eliza0x/Mikan/tree/master/samplecode).
 
-## Is it a calculator or programming langage?
-NO, it is a counter for oranges. neither more nor less.
-
+## LICENCE
+MIT
